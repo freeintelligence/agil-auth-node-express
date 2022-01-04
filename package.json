@@ -1,0 +1,39 @@
+{
+  "name": "agil-auth-node-express",
+  "version": "1.0.0",
+  "description": "Agile authentication for ExpressJS",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freeintelligence/agil-auth-node-express.git"
+  },
+  "keywords": [
+    "agil",
+    "nodejs",
+    "node",
+    "express",
+    "expressjs",
+    "auth",
+    "authentication",
+    "login",
+    "api"
+  ],
+  "author": {
+    "email": "free04381@gmail.com",
+    "name": "freeintelligence"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/freeintelligence/agil-auth-node-express/issues"
+  },
+  "homepage": "https://github.com/freeintelligence/agil-auth-node-express#readme",
+  "dependencies": {
+    "agil-auth-node": "^1.1.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  }
+}

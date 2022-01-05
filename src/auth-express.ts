@@ -1,5 +1,5 @@
 import { Settings, Auth } from 'agil-auth-node';
-import { NextFunction, Request, Response, Router } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { ApiRoutesController } from './controllers/api-routes.controller';
 import { ApiRoutesSettings } from './interfaces/api-routes-settings.interface';
 

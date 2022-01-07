@@ -66,15 +66,24 @@ export class ApiRoutesController {
     req.auth = await new Auth(this.authSettings).attempt(findBy, compareBy);
 
     res.header('Cache-Control', 'no-store');
-    res.json({
-      check: req.auth.check(),
-      user: req.auth.user,
-      access: {
-        token: req.auth.tokens().all()[0].token,
-        type: 'Bearer',
-        expireAt: req.auth.tokens().all()[0].expireAt,
-      },
-    });
+
+    if (req.auth.check()) {
+      res.status(200).json({
+        check: req.auth.check(),
+        user: req.auth.user,
+        access: {
+          token: req.auth.tokens().all()[0].token,
+          type: 'Bearer',
+          expireAt: req.auth.tokens().all()[0].expireAt,
+        },
+      });
+    } else {
+      res.status(401).json({
+        check: req.auth.check(),
+        user: null,
+        access: null,
+      });
+    }
   }
 
   /**

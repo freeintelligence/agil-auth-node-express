@@ -3,6 +3,7 @@ import { Router, Request, Response } from "express";
 import { ApiRoutesSettings } from "../interfaces/api-routes-settings.interface";
 import { Utils } from './../utils';
 import bodyParser from 'body-parser';
+import bcrypt from 'bcrypt';
 
 /**
  * Api routes controller (auth)
@@ -17,6 +18,7 @@ export class ApiRoutesController {
     this.authSettings = authSettings;
     this.apiRoutesSettings = this.fixApiRoutesSettings(apiRoutesSettings);
     this.router = Router();
+    this.authSettings.setMethodCompareAttempt((toCompare: { [key: string]: any }, rawUserData: { [key: string]: any }) => bcrypt.compareSync(toCompare.password, rawUserData.password));
 
     this.router.use(bodyParser.urlencoded({ extended: true }));
     this.router.use(bodyParser.json());
@@ -39,7 +41,8 @@ export class ApiRoutesController {
       login: {
         enabled: false,
         path: '/login',
-        fields: [ 'email', 'password' ],
+        findBy: [ 'username' ],
+        compareBy: [ 'password' ],
       },
       user: {
         enabled: true,
@@ -54,26 +57,28 @@ export class ApiRoutesController {
    * Auth login url
    */
   async login(req: Request, res: Response) {
-    const fields: { [key: string]: any } = {};
+    const findBy: { [key: string]: any } = {};
+    const compareBy: { [key: string]: any } = {};
 
-    this.apiRoutesSettings.login.fields.forEach(fieldName => fields[fieldName] = req.body[fieldName]);
+    this.apiRoutesSettings.login.findBy.forEach(fieldName => findBy[fieldName] = req.body[fieldName]);
+    this.apiRoutesSettings.login.compareBy.forEach(fieldName => compareBy[fieldName] = req.body[fieldName]);
 
-    req.auth = await new Auth(this.authSettings).attempt(fields);
+    req.auth = await new Auth(this.authSettings).attempt(findBy, compareBy);
 
     res.header('Cache-Control', 'no-store');
     res.json({
       check: req.auth.check(),
       user: req.auth.user,
       access: {
-        token: req.auth.getCurrentToken().token,
+        token: req.auth.tokens().all()[0].token,
         type: 'Bearer',
-        expireAt: req.auth.getCurrentToken().expireAt,
+        expireAt: req.auth.tokens().all()[0].expireAt,
       },
     });
   }
 
   /**
-   * Get current user url
+   * Get current data user
    */
   async user(req: Request, res: Response) {
     if (req.auth.check()) {

@@ -2,7 +2,8 @@ export interface ApiRoutesSettings {
   login?: {
     enabled?: boolean;
     path?: string;
-    fields?: string[];
+    findBy?: string[];
+    compareBy?: string[];
   };
   user?: {
     enabled?: boolean;

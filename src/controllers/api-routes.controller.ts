@@ -31,6 +31,14 @@ export class ApiRoutesController {
     if (this.apiRoutesSettings.user.enabled) {
       this.router.get(this.apiRoutesSettings.user.path, this.user.bind(this));
     }
+
+    if (this.apiRoutesSettings.register.enabled) {
+      this.router.post(this.apiRoutesSettings.register.path, this.register.bind(this));
+    }
+
+    if (this.apiRoutesSettings.logout.enabled) {
+      this.router.delete(this.apiRoutesSettings.logout.path, this.logout.bind(this));
+    }
   }
 
   /**
@@ -47,7 +55,16 @@ export class ApiRoutesController {
       user: {
         enabled: true,
         path: '/user',
-      }
+      },
+      register: {
+        enabled: false,
+        path: '/register',
+        fields: [ 'username', 'password' ],
+      },
+      logout: {
+        enabled: true,
+        path: '/logout',
+      },
     };
 
     return Utils.merge(defaultValues, apiRoutesSettings);
@@ -84,6 +101,20 @@ export class ApiRoutesController {
         access: null,
       });
     }
+  }
+
+  /**
+   * Register user
+   */
+  async register(req: Request, res: Response) {
+
+  }
+
+  /**
+   * Logout user
+   */
+  async logout(req: Request, res: Response) {
+    
   }
 
   /**

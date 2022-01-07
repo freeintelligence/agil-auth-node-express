@@ -5,8 +5,17 @@ export interface ApiRoutesSettings {
     findBy?: string[];
     compareBy?: string[];
   };
+  register?: {
+    enabled?: boolean;
+    path?: string;
+    fields?: string[];
+  };
+  logout?: {
+    enabled?: boolean;
+    path?: string;
+  };
   user?: {
     enabled?: boolean;
     path?: string;
-  }
+  };
 }

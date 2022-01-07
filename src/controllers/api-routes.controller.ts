@@ -114,7 +114,13 @@ export class ApiRoutesController {
    * Logout user
    */
   async logout(req: Request, res: Response) {
-    
+    if (req.auth.check()) {
+      for (const token of req.auth.tokens().all()) {
+        await token.delete();
+      }
+    }
+
+    res.json(null);
   }
 
   /**

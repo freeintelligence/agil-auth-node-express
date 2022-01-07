@@ -115,6 +115,10 @@ export class ApiRoutesController {
    */
   async logout(req: Request, res: Response) {
     if (req.auth.check()) {
+      if (req.query.all) {
+        await req.auth.tokens().sync();
+      }
+
       for (const token of req.auth.tokens().all()) {
         await token.delete();
       }

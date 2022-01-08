@@ -9,6 +9,8 @@ export interface ApiRoutesSettings {
     enabled?: boolean;
     path?: string;
     fields?: string[];
+    allowOnLogged?: boolean;
+    autologin?: boolean;
   };
   logout?: {
     enabled?: boolean;

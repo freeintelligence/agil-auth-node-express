@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/freeintelligence/agil-auth-node-express#readme",
   "peerDependencies": {
-    "agil-auth-node": "^1.3.3",
+    "agil-auth-node": "^1.3.4",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "express": "^4.17.2"

@@ -18,7 +18,14 @@ export class ApiRoutesController {
     this.authSettings = authSettings;
     this.apiRoutesSettings = this.fixApiRoutesSettings(apiRoutesSettings);
     this.router = Router();
-    this.authSettings.setMethodCompareAttempt((toCompare: { [key: string]: any }, rawUserData: { [key: string]: any }) => bcrypt.compareSync(toCompare.password, rawUserData.password));
+    
+    this.authSettings.setMethodCompareAttempt((toCompare: { [key: string]: any }, rawUserData: { [key: string]: any }) => {
+      if (toCompare.password && rawUserData.password) {
+        return bcrypt.compareSync(toCompare.password, rawUserData.password);
+      }
+
+      return true;
+    });
 
     this.router.use(bodyParser.urlencoded({ extended: true }));
     this.router.use(bodyParser.json());
@@ -60,6 +67,8 @@ export class ApiRoutesController {
         enabled: false,
         path: '/register',
         fields: [ 'username', 'password' ],
+        allowOnLogged: false,
+        autologin: true,
       },
       logout: {
         enabled: true,
@@ -107,7 +116,31 @@ export class ApiRoutesController {
    * Register user
    */
   async register(req: Request, res: Response) {
+    if (req.auth.check() && !this.apiRoutesSettings.register.allowOnLogged) {
+      return res.status(403).json(null);
+    }
 
+    const fields: { [key: string]: any } = {};
+    const salt = await bcrypt.genSalt(10);
+
+    this.apiRoutesSettings.register.fields.forEach(fieldName => fields[fieldName] = req.body[fieldName]);
+
+    fields.password = await bcrypt.hash(fields.password, salt);
+    const user = await this.authSettings.createUserData(fields);
+
+    if (this.apiRoutesSettings.register.autologin) {
+      req.auth = await new Auth(this.authSettings).attempt({ id: user.id }, { id: user.id });
+    }
+
+    res.header('Cache-Control', 'no-store').status(201).json({
+      check: req.auth.check(),
+      user: req.auth.user,
+      access: req.auth.check() ? {
+        token: req.auth.tokens().all()[0].token,
+        type: 'Bearer',
+        expireAt: req.auth.tokens().all()[0].expireAt,
+      } : {},
+    });
   }
 
   /**
@@ -134,7 +167,7 @@ export class ApiRoutesController {
     if (req.auth.check()) {
       res.status(200).json(req.auth.user);
     } else {
-      res.status(401).json(null);
+      res.status(403).json(null);
     }
   }
 
